@@ -6,10 +6,10 @@ from lxml import etree
 
 import xmltodict
 
-from controls import StringControl, DateControl, TimeControl, DateTimeControl, \
+from .controls import StringControl, DateControl, TimeControl, DateTimeControl, \
     BooleanControl, AnyUriControl, EmailControl, DecimalControl, \
     Select1Control, OpenSelect1Control, SelectControl, ImageAnnotationControl
-from utils import generate_xml_root, unaccent_unicode
+from .utils import generate_xml_root, unaccent_unicode
 
 # `xforms:` types are here for backwards compatibility.
 XF_TYPE_CONTROL = {

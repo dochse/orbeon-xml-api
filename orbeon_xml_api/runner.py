@@ -5,8 +5,8 @@
 import re
 from lxml import etree
 
-from builder import Builder, XF_TYPE_CONTROL
-from utils import generate_xml_root, unaccent_unicode
+from .builder import Builder, XF_TYPE_CONTROL
+from .utils import generate_xml_root, unaccent_unicode
 
 
 class Runner:
