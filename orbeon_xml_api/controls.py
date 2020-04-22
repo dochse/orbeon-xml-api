@@ -1,20 +1,26 @@
 # -*- coding: utf-8 -*-
-# Copyright 2017-2018 Bob Leers (http://www.novacode.nl)
-# See LICENSE file for full licensing details.
+
+
 
 from datetime import datetime, time
 from lxml import etree
 
 import xmltodict
 
+x = 0
+
+y = 0
 
 class ResourceElement(object):
     """
     The Resource Element of a Control (fr-form-resources)
     """
+    
 
     def __init__(self, control):
         self.control = control
+        
+        
 
     def __getattr__(self, name):
         if self.control._resource and hasattr(self.control._resource, 'element'):
@@ -25,7 +31,10 @@ class ResourceElement(object):
 
 class Control(object):
 
+    y = 0
+
     def __init__(self, builder, bind, element):
+        
         self._builder = builder
         self._bind = bind
         self._element = element
@@ -34,7 +43,7 @@ class Control(object):
 
         self._parent = None
         self.set_parent()
-
+        
         # XXX Maybe set_refs is obsolete by following
         self._resource = None
         self.set_resource()
@@ -49,7 +58,6 @@ class Control(object):
 
         self.default_value = None
         self.set_default_value()
-
         self._resource_element = ResourceElement(self)
 
         # Attributes via Element (which get these dynamically)
@@ -57,19 +65,18 @@ class Control(object):
         self.hint = None
         self.alert = None
 
+
         if self._resource:
             self.label = self._resource.element.get('label', None)
             self.hint = self._resource.element.get('hint', None)
             self.alert = self._resource.element.get('alert', None)
-
         self._raw_value = None
         self.set_raw_value()
-
         self.init()
 
     def init(self):
         """ This method is called after :meth:`~._init__`."""
-        pass
+        return
 
     def add_context(self, context):
         self._context = context
@@ -85,10 +92,9 @@ class Control(object):
         # TODO namespace prefix Error
         # query = "//xf:model/xf:instance/form/%s/%s" % (
         query = "//form/%s/%s" % (
-            self._bind.parent.name,
-            self._bind.name
+            self._bind.parent.name.decode("utf-8") ,
+            self._bind.name.decode("utf-8") 
         )
-
         res = self._builder.xml_root.xpath(query)
 
         if len(res) > 0:

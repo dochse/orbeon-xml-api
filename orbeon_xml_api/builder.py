@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright 2017-2018 Bob Leers (http://www.novacode.nl)
-# See LICENSE file for full licensing details.
+
+
 
 from lxml import etree
 
@@ -10,7 +10,7 @@ from .controls import StringControl, DateControl, TimeControl, DateTimeControl, 
     BooleanControl, AnyUriControl, EmailControl, DecimalControl, \
     Select1Control, OpenSelect1Control, SelectControl, ImageAnnotationControl
 from .utils import generate_xml_root, unaccent_unicode
-
+#.ITERITEMS ARE MADE TO ITEMS()
 # `xforms:` types are here for backwards compatibility.
 XF_TYPE_CONTROL = {
     'xf:string': StringControl,
@@ -57,12 +57,15 @@ XF_TYPE_CONTROL = {
 
 class Builder:
 
-    def __init__(self, xml, lang='en', **kwargs):
+    def __init__(self, xml, lang, **kwargs):
+        
+        
         self.xml = xml
         self.lang = lang
 
         self.xml_root = None
         self.set_xml_root()
+        
 
         self._control_objects = {}
         if kwargs.get('controls', False):
@@ -74,22 +77,21 @@ class Builder:
 
         self.binds = {}
         self.set_binds()
-
         self.fr_body_elements = []
         self.set_fr_body_elements()
-
+        
         self.resource = {}
         self.set_resource()
-
+        
         self.controls = {}
         self.set_controls()
 
         self.sanitized_control_names = {}
         self.set_sanitized_control_names()
-
+        
         self.form_instance = []
         self.set_form_instance()
-
+        
     def set_xml_root(self):
         self.xml_root = generate_xml_root(self.xml)
 
@@ -144,8 +146,8 @@ class Builder:
         for name in self.controls.keys():
             if name is None:
                 continue
-
-            k = name
+            #AANGEPAST!
+            k = name.decode('utf-8')
             k = k.replace('-', '')
             k = k.replace('.', '_')
             self.sanitized_control_names[k] = name
@@ -254,7 +256,7 @@ class Bind:
 
     def get_fr_control_object(self, element):
         fr_control_tag = etree.QName(element).localname
-
+                
         if fr_control_tag in ('select1', 'dropdown-select1'):
             if self.builder._control_objects.get('Select1Control', False):
                 return self.builder._control_objects.get('Select1Control')(self.builder, self, element)
@@ -285,8 +287,8 @@ class Bind:
             if self.builder._control_objects.get(control_class_name, False):
                 return self.builder._control_objects.get(control_class_name)(self.builder, self, element)
             else:
+                
                 return XF_TYPE_CONTROL[self.xf_type](self.builder, self, element)
-
 
 class Resource:
 
