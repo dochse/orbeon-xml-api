@@ -287,7 +287,7 @@ class Select1Control(StringControl):
 
         for item in self._resource.element['item']:
             # XXX Seems a buggy assumption. Things like 'label'.
-            if isinstance(item, basestring):
+            if isinstance(item, str):
                 continue
             elif item['value'] == self.choice_value:
                 self.choice_label = item['label']
@@ -323,7 +323,7 @@ class SelectControl(StringControl):
             label = None
             value = None
 
-            if isinstance(item, basestring):
+            if isinstance(item, str):
                 if item == 'label':
                     label = item
                 if item == 'value':
