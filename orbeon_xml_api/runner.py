@@ -7,6 +7,8 @@ from lxml import etree
 
 from .builder import Builder, XF_TYPE_CONTROL
 from .utils import generate_xml_root, unaccent_unicode
+import logging
+_logger = logging.getLogger(__name__)
 
 
 class Runner:
@@ -100,7 +102,6 @@ class Runner:
         """
         @param name str The control name (form element tag)
         """
-
         if name not in self.builder.controls:
             return False
 
@@ -108,8 +109,12 @@ class Runner:
 
         if control._parent is None:
             return None
-
-        return self._form[name]
+        try:
+            self._form[name]
+            return self._form[name]
+        except Exception as e:
+            _logger.error(e)
+            pass
 
     def get_raw_value(self, name):
         return self.raw_values[name]
@@ -132,17 +137,12 @@ class Runner:
         # TODO Move and rebuild into RunnerCopyBuilderMerge (class)
         parser = etree.XMLParser(ns_clean=True, encoding='utf-8')
         root = etree.XML(b'<?xml version="1.0" encoding="UTF-8"?><form></form>', parser)
-
         no_copy_prefix = kwargs.get('no_copy_prefix', None)
 
         parents = {}
-
         for tag, element in builder_obj.controls.items():
-
             if tag in self.builder.controls.keys():
-                # k_: Known elements (present in original runner/builder)
                 k_control = self.builder.controls.get(tag, False)
-
                 if not k_control:
                     continue
 
@@ -165,7 +165,6 @@ class Runner:
                         parents[k_parent_control._bind.name].append(k_control._model_instance)
                     else:
                         parents[k_parent_control._bind.name].append(k_form_element)
-                        # root.append(k_form_element)
             else:
                 # n_: New elements
                 n_new_control = builder_obj.controls.get(tag, False)
@@ -195,6 +194,7 @@ class Runner:
                     parents[n_parent_control._bind.name].append(n_new_control._model_instance)
                 elif n_new_control and hasattr(n_new_control._parent, '_bind'):
                     parents[n_new_control._parent._bind.name] = n_new_control._model_instance
+
 
         # Unicode support
         merge_form_xml = etree.tostring(root)
